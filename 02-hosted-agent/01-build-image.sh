@@ -1,0 +1,1 @@
+docker build -t azure-devops-self-hosted-agent:latest .

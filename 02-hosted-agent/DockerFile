@@ -1,0 +1,55 @@
+FROM ubuntu:latest
+
+# Propietario 
+LABEL maintainer="Madelem Chico Velasco <madelenchicovelasco@gmail.com>"
+
+# Configura el entorno
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Actualiza los paquetes y instala dependencias esenciales
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    unzip \
+    git \
+    software-properties-common \
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
+    lsb-release
+
+# Instala Docker
+RUN apt-get install -y docker.io
+
+# Instala Git
+RUN apt-get install -y git
+
+# Instala Java (OpenJDK 11)
+RUN apt-get install -y openjdk-11-jdk
+
+# Instala Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
+    apt-get install -y nodejs
+
+# Instala .NET SDK
+RUN wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install -y dotnet-sdk-6.0
+
+# Instala kubectl
+RUN curl -LO "https://dl.k8s.io/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x kubectl && \
+    mv kubectl /usr/local/bin/
+
+# Instala Azure DevOps agent
+RUN mkdir /azp
+WORKDIR /azp
+RUN curl -o azagent.tar.gz https://vstsagentpackage.azureedge.net/agent/2.193.0/vsts-agent-linux-x64-2.193.0.tar.gz && \
+    tar zxvf azagent.tar.gz && \
+    ./bin/installdependencies.sh
+
+COPY ./start.sh .
+RUN chmod +x start.sh
+
+CMD ["./start.sh"]
