@@ -1,0 +1,1 @@
+docker build --target dev-envs -t app-dev-envs:latest .

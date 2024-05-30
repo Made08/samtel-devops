@@ -1,0 +1,1 @@
+docker build --target builder -t app-builder:latest .

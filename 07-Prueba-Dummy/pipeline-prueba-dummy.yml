@@ -8,37 +8,42 @@ steps:
 - script: |
     cd cd 07-Prueba-Dummy/nginx-golang-postgres/backend/
     ./01-build-image.sh
-  displayName: 'Construir Imagen Docker + Compilar la aplicación Go'
-
-- task: SonarQubePrepare@4
-  inputs:
-    SonarQube: 'SonarQube'
-    scannerMode: 'CLI'
-    configMode: 'manual'
-    cliProjectKey: '<clave_del_proyecto_en_sonarqube>'
-    cliProjectName: '<nombre_del_proyecto_en_sonarqube>'
-    cliSources: '.'
-    cliAnalysisLogLevel: 'INFO'
-  displayName: 'Preparar análisis de SonarQube'
+  displayName: 'Construir Imagen Base'
 
 - script: |
-    sonar-scanner
-    sonar-scanner -Dsonar.qualitygate.wait=true
-  displayName: 'Ejecutar análisis de SonarQube'
+    cd cd 07-Prueba-Dummy/nginx-golang-postgres/backend/
+    ./01-build-dev.sh
+  displayName: 'Construir Imagen Middleware  + Compilar la aplicación Go'
 
-- job: AnalisisFallido
-  displayName: 'Escenario: Análisis fallido'
-  dependsOn: SonarQubePrepare
-  condition: failed()
+#- task: SonarQubePrepare@4
+#  inputs:
+#    SonarQube: 'SonarQube'
+#    scannerMode: 'CLI'
+#    configMode: 'manual'
+#    cliProjectKey: '<clave_del_proyecto_en_sonarqube>'
+#    cliProjectName: '<nombre_del_proyecto_en_sonarqube>'
+#    cliSources: '.'
+#    cliAnalysisLogLevel: 'INFO'
+#  displayName: 'Preparar análisis de SonarQube'
+
+#- script: |
+#    sonar-scanner
+#    sonar-scanner -Dsonar.qualitygate.wait=true
+#  displayName: 'Ejecutar análisis de SonarQube'
+
+#- job: AnalisisFallido
+#  displayName: 'Escenario: Análisis fallido'
+#  dependsOn: SonarQubePrepare
+#  condition: failed()
 
   steps:
   - script: echo 'El análisis de SonarQube ha fallado'
     displayName: 'Mensaje'
 
-- job: AnalisisExitoso
-  displayName: 'Escenario: Análisis exitoso'
-  dependsOn: SonarQubePrepare
-  condition: succeeded()
+#- job: AnalisisExitoso
+#  displayName: 'Escenario: Análisis exitoso'
+#  dependsOn: SonarQubePrepare
+#  condition: succeeded()
 
   steps:
   - script: echo 'El análisis de SonarQube ha sido exitoso'

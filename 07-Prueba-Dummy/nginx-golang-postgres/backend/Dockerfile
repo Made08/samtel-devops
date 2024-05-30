@@ -1,6 +1,9 @@
 # syntax=docker/dockerfile:1.4
 FROM --platform=$BUILDPLATFORM golang:1.18-alpine AS builder
 
+# Propietario 
+LABEL maintainer="Madelem Chico Velasco <madelenchicovelasco@gmail.com>"
+
 WORKDIR /code
 
 ENV CGO_ENABLED 0
