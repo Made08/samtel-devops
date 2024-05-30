@@ -31,8 +31,8 @@ steps:
 #    sonar-scanner -Dsonar.qualitygate.wait=true
 #  displayName: 'Ejecutar análisis de SonarQube'
 
-#- job: AnalisisFallido
-#  displayName: 'Escenario: Análisis fallido'
+- job: AnalisisFallido
+  displayName: 'Escenario: Análisis fallido'
 #  dependsOn: SonarQubePrepare
 #  condition: failed()
 
@@ -40,8 +40,8 @@ steps:
   - script: echo 'El análisis de SonarQube ha fallado'
     displayName: 'Mensaje'
 
-#- job: AnalisisExitoso
-#  displayName: 'Escenario: Análisis exitoso'
+- job: AnalisisExitoso
+  displayName: 'Escenario: Análisis exitoso'
 #  dependsOn: SonarQubePrepare
 #  condition: succeeded()
 
