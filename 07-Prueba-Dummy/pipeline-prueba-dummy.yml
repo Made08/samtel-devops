@@ -1,28 +1,14 @@
 trigger:
-- main
+- master
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: DownloadPipelineArtifact@2
-  inputs:
-    buildType: 'specific'
-    project: '<nombre_del_proyecto>'
-    pipeline: '<nombre_del_pipeline>'
-    runVersion: 'latest'
-    targetPath: '$(System.ArtifactsDirectory)'
-  displayName: 'Descargar archivos del repositorio'
-
-- task: UseGo@0
-  inputs:
-    version: '1.17.x'
-  displayName: 'Instalar Go'
-
 - script: |
-    go mod download
-    go build -o mi_aplicacion
-  displayName: 'Compilar la aplicación Go'
+    cd cd 07-Prueba-Dummy/nginx-golang-postgres/backend/
+    ./01-build-image.sh
+  displayName: 'Construir Imagen Docker + Compilar la aplicación Go'
 
 - task: SonarQubePrepare@4
   inputs:
