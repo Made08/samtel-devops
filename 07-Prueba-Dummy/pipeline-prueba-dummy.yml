@@ -82,27 +82,27 @@ steps:
     done
   displayName: 'Crear archivos con la fecha y mostrar en consola'
 
-- task: KubernetesManifest@0
-  inputs:
-    action: 'deploy'
-    kubernetesServiceConnection: '<nombre_de_la_conexion_a_Kubernetes>'
-    namespace: '<nombre_del_namespace>'
-    manifests: '**/*.yaml'
-  displayName: 'Desplegar la aplicación en Kubernetes'
+#- task: KubernetesManifest@0
+#  inputs:
+#    action: 'deploy'
+#    kubernetesServiceConnection: '<nombre_de_la_conexion_a_Kubernetes>'
+#    namespace: '<nombre_del_namespace>'
+#    manifests: '**/*.yaml'
+#  displayName: 'Desplegar la aplicación en Kubernetes'
 
-- task: KubernetesManifest@0
-  inputs:
-    action: 'createSecret'
-    secretType: 'dockerRegistry'
-    kubernetesServiceConnection: '<nombre_de_la_conexion_a_Kubernetes>'
-    secretName: 'registry-secret'
-    dockerRegistryEndpoint: '<nombre_del_contenedor_registry>'
-  displayName: 'Crear secreto para el registro de Docker'
+#- task: KubernetesManifest@0
+#  inputs:
+#    action: 'createSecret'
+#    secretType: 'dockerRegistry'
+#    kubernetesServiceConnection: '<nombre_de_la_conexion_a_Kubernetes>'
+#    secretName: 'registry-secret'
+#    dockerRegistryEndpoint: '<nombre_del_contenedor_registry>'
+#  displayName: 'Crear secreto para el registro de Docker'
 
-- task: KubernetesManifest@0
-  inputs:
-    action: 'deploy'
-    kubernetesServiceConnection: '<nombre_de_la_conexion_a_Kubernetes>'
-    namespace: '<nombre_del_namespace>'
-    manifests: 'environment/*.yaml'
-  displayName: 'Subir YAMLs de Kubernetes al repositorio en la carpeta environment'
+#- task: KubernetesManifest@0
+#  inputs:
+#    action: 'deploy'
+#    kubernetesServiceConnection: '<nombre_de_la_conexion_a_Kubernetes>'
+#    namespace: '<nombre_del_namespace>'
+#    manifests: 'environment/*.yaml'
+#  displayName: 'Subir YAMLs de Kubernetes al repositorio en la carpeta environment'
