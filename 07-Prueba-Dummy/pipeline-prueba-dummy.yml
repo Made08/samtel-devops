@@ -1,0 +1,117 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: DownloadPipelineArtifact@2
+  inputs:
+    buildType: 'specific'
+    project: '<nombre_del_proyecto>'
+    pipeline: '<nombre_del_pipeline>'
+    runVersion: 'latest'
+    targetPath: '$(System.ArtifactsDirectory)'
+  displayName: 'Descargar archivos del repositorio'
+
+- task: UseGo@0
+  inputs:
+    version: '1.17.x'
+  displayName: 'Instalar Go'
+
+- script: |
+    go mod download
+    go build -o mi_aplicacion
+  displayName: 'Compilar la aplicación Go'
+
+- task: SonarQubePrepare@4
+  inputs:
+    SonarQube: 'SonarQube'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '<clave_del_proyecto_en_sonarqube>'
+    cliProjectName: '<nombre_del_proyecto_en_sonarqube>'
+    cliSources: '.'
+    cliAnalysisLogLevel: 'INFO'
+  displayName: 'Preparar análisis de SonarQube'
+
+- script: |
+    sonar-scanner
+    sonar-scanner -Dsonar.qualitygate.wait=true
+  displayName: 'Ejecutar análisis de SonarQube'
+
+- job: AnalisisFallido
+  displayName: 'Escenario: Análisis fallido'
+  dependsOn: SonarQubePrepare
+  condition: failed()
+
+  steps:
+  - script: echo 'El análisis de SonarQube ha fallado'
+    displayName: 'Mensaje'
+
+- job: AnalisisExitoso
+  displayName: 'Escenario: Análisis exitoso'
+  dependsOn: SonarQubePrepare
+  condition: succeeded()
+
+  steps:
+  - script: echo 'El análisis de SonarQube ha sido exitoso'
+    displayName: 'Mensaje'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: '<nombre_del_contenedor_registry>'
+    repository: '<nombre_del_repositorio>'
+    command: 'build'
+    Dockerfile: '**/Dockerfile'
+    tags: 'latest'
+  displayName: 'Construir imagen Docker'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: '<nombre_del_contenedor_registry>'
+    repository: '<nombre_del_repositorio>'
+    command: 'push'
+    tags: 'latest'
+  displayName: 'Subir imagen Docker'
+
+- script: |
+    for i in {1..10}
+    do
+      echo "Hola Mundo"
+    done
+  displayName: 'Imprimir Hola Mundo 10 veces'
+
+- script: |
+    for i in {1..10}
+    do
+      touch "archivo_$i_$(date +%Y-%m-%d).txt"
+      echo "Archivo $i creado: $(date +%Y-%m-%d)" >> "archivo_$i_$(date +%Y-%m-%d).txt"
+      cat "archivo_$i_$(date +%Y-%m-%d).txt"
+    done
+  displayName: 'Crear archivos con la fecha y mostrar en consola'
+
+- task: KubernetesManifest@0
+  inputs:
+    action: 'deploy'
+    kubernetesServiceConnection: '<nombre_de_la_conexion_a_Kubernetes>'
+    namespace: '<nombre_del_namespace>'
+    manifests: '**/*.yaml'
+  displayName: 'Desplegar la aplicación en Kubernetes'
+
+- task: KubernetesManifest@0
+  inputs:
+    action: 'createSecret'
+    secretType: 'dockerRegistry'
+    kubernetesServiceConnection: '<nombre_de_la_conexion_a_Kubernetes>'
+    secretName: 'registry-secret'
+    dockerRegistryEndpoint: '<nombre_del_contenedor_registry>'
+  displayName: 'Crear secreto para el registro de Docker'
+
+- task: KubernetesManifest@0
+  inputs:
+    action: 'deploy'
+    kubernetesServiceConnection: '<nombre_de_la_conexion_a_Kubernetes>'
+    namespace: '<nombre_del_namespace>'
+    manifests: 'environment/*.yaml'
+  displayName: 'Subir YAMLs de Kubernetes al repositorio en la carpeta environment'
