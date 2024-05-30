@@ -51,17 +51,17 @@ steps:
 
 - task: Docker@2
   inputs:
-    containerRegistry: '<nombre_del_contenedor_registry>'
-    repository: '<nombre_del_repositorio>'
+    containerRegistry: 'hub.docker.com/repository/docker/madelemchico1'
+    repository: 'madelemchico1/samtel-devops'
     command: 'build'
-    Dockerfile: '**/Dockerfile'
+    Dockerfile: '**/07-Prueba-Dummy/nginx-golang-postgres/backend/Dockerfile'
     tags: 'latest'
   displayName: 'Construir imagen Docker'
 
 - task: Docker@2
   inputs:
-    containerRegistry: '<nombre_del_contenedor_registry>'
-    repository: '<nombre_del_repositorio>'
+    containerRegistry: 'hub.docker.com/repository/docker/madelemchico1'
+    repository: 'madelemchico1/samtel-devops'
     command: 'push'
     tags: 'latest'
   displayName: 'Subir imagen Docker'
